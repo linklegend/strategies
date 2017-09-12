@@ -11,7 +11,7 @@ public class Automail {
     public Automail(IMailDelivery delivery) {
     	// Swap between simple provided strategies and your strategies here
     	    	/*hi*/
-    	/*how*/
+    	
     	/** Initialize the MailPool */
     	mailPool = new MailPool();
     	
