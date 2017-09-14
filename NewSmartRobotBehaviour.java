@@ -1,51 +1,21 @@
 package strategies;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-
-import automail.Clock;
 import automail.MailItem;
-import automail.PriorityMailItem;
 import automail.StorageTube;
 import exceptions.TubeFullException;
 
 public class NewSmartRobotBehaviour implements IRobotBehaviour{
 	
-	private int newPriorityArrival;
-	
 	public NewSmartRobotBehaviour(){
-		newPriorityArrival = 0;
+		
 	}
 	@Override
 	public boolean returnToMailRoom(StorageTube tube) {
-		// Check if my tube contains only priority items
+		
 		if(!tube.isEmpty()){
-			int priorityCount = 0;
-			int nonPriorityCount = 0;
-			// There has to be more priority than non-priority to keep going
-			for(MailItem m : tube.tube){
-				if(m instanceof PriorityMailItem){
-					priorityCount++;
-				}
-				else{
-					nonPriorityCount++;
-				}
-			}
 			
-			if(priorityCount >= nonPriorityCount){
-				return false;
-			}
-			else{
-				// Check if there is more than 1 priority arrival and the size of the tube is greater than or equal to half
-				if(newPriorityArrival > 1 && tube.getSize() >= tube.MAXIMUM_CAPACITY/2){
-
-					return true;
-				}
-				else{
-					return false;
-				}
-				
-			}
+			return false;
 		}
 		else{
 			return true;
@@ -54,9 +24,6 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 
 	@Override
 	public void priorityArrival(int priority) {
-    	// Record that a new one has arrived
-		newPriorityArrival++;
-    	System.out.println("T: "+Clock.Time()+" | Priority arrived");
 		
 	}
 
@@ -71,7 +38,7 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 		}
 		
 		// Grab priority mail
-		while(tempTube.size() < tube.MAXIMUM_CAPACITY){
+		while(tempTube.size() < StorageTube.MAXIMUM_CAPACITY){
 			if(containMail(mailPool,MailPool.PRIORITY_POOL)){
 				tempTube.add(mailPool.getHighestPriorityMail());
 			}
@@ -88,7 +55,7 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 		}
 		
 		// Sort tempTube based on floor
-		tempTube.sort(new ArrivalComparer());
+		tempTube.sort(MailItem.arrivalComparator);
 		
 		// Iterate through the tempTube
 		while(tempTube.iterator().hasNext()){
@@ -101,7 +68,6 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 		
 		// Check if there is anything in the tube
 		if(!tube.tube.isEmpty()){
-			newPriorityArrival = 0;
 			return true;
 		}
 		return false;
@@ -117,15 +83,6 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 		else{
 			return false;
 		}
-	}
-	
-	private class ArrivalComparer implements Comparator<MailItem>{
-
-		@Override
-		public int compare(MailItem m1, MailItem m2) {
-			return MailPool.compareArrival(m1, m2);
-		}
-		
 	}
 
 }
