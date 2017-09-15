@@ -38,7 +38,7 @@ public class NewSmartRobotBehaviour implements IRobotBehaviour{
 		}
 		
 		// Grab priority mail
-		while(tempTube.size() < StorageTube.MAXIMUM_CAPACITY){
+		while(tempTube.size() < tube.MAXIMUM_CAPACITY){
 			if(containMail(mailPool,MailPool.PRIORITY_POOL)){
 				tempTube.add(mailPool.getHighestPriorityMail());
 			}

@@ -13,6 +13,8 @@ public class Automail {
     public IMailPool mailPool;
     public IRobotBehaviour robotBehaviour;
     public Observable commsStation;
+    public static final int COMM_ROBOT_CAPACITY = 4;
+    public static final int BIG_ROBOT_CAPACITY = 6;
     
     public Automail(IMailDelivery delivery) {
     	// Swap between simple provided strategies and your strategies here
@@ -28,16 +30,15 @@ public class Automail {
     	if (Simulation.automailProperties.getProperty("Robot_Type").equals("Small_Comms_Simple")) {
     		
     		robotBehaviour = new SimpleRobotBehaviour();
-    		robot = new CommsRobot(robotBehaviour, delivery, mailPool, commsStation);
+    		robot = new CommsRobot(robotBehaviour, delivery, mailPool, COMM_ROBOT_CAPACITY, commsStation);
     	}
     	else if (Simulation.automailProperties.getProperty("Robot_Type").equals("Small_Comms_Smart")) {
     		robotBehaviour = new SmartRobotBehaviour();
-    		robot = new CommsRobot(robotBehaviour, delivery, mailPool, commsStation);
+    		robot = new CommsRobot(robotBehaviour, delivery, mailPool, COMM_ROBOT_CAPACITY, commsStation);
     	}
     	else {
     		robotBehaviour = new NewSmartRobotBehaviour();
-    		StorageTube.MAXIMUM_CAPACITY = 6;
-        	robot = new Robot(robotBehaviour, delivery, mailPool);
+        	robot = new Robot(robotBehaviour, delivery, mailPool, BIG_ROBOT_CAPACITY);
     	}
 
     	
