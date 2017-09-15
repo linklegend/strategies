@@ -5,7 +5,6 @@ import automail.IMailDelivery;
 import java.util.Observable;
 import automail.Robot;
 import automail.Simulation;
-import automail.StorageTube;
 
 public class Automail {
 	      
