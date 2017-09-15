@@ -1,21 +1,23 @@
 package strategies;
 
 import java.util.ArrayList;
-import java.util.Observable;
+import java.util.Arrays;
+import java.util.Comparator;
+
 import automail.MailItem;
 import automail.PriorityMailItem;
 
-public class MailPool extends Observable implements IMailPool {
+public class MailPool implements IMailPool{
 	
 	public static final String PRIORITY_POOL = "PRIORITY_POOL";
 	public static final String NON_PRIORITY_POOL = "NON_PRIORITY_POOL";
 	
 	private ArrayList<MailItem> nonPriorityPool;
-	private ArrayList<PriorityMailItem> priorityPool;
+	private ArrayList<MailItem> priorityPool;
 	
 	public MailPool(){
 		nonPriorityPool = new ArrayList<MailItem>();
-		priorityPool = new ArrayList<PriorityMailItem>();
+		priorityPool = new ArrayList<MailItem>();
 	}
 	
 	public int getPriorityPoolSize(){
@@ -30,17 +32,14 @@ public class MailPool extends Observable implements IMailPool {
 		// Check whether it has a priority or not
 		if(mailItem instanceof PriorityMailItem){
 			// Add to priority items
-			PriorityMailItem pMailItem = (PriorityMailItem) mailItem;
-			priorityPool.add(pMailItem);
-			priorityPool.sort(PriorityMailItem.priorityComparator);
-			// notify robot
-			notifyObservers(pMailItem.getPriorityLevel());
+			priorityPool.add(mailItem);
+			priorityPool.sort(new PriorityComparer());
 
 		}
 		else{
 			// Add to nonpriority items
 			nonPriorityPool.add(mailItem);
-			nonPriorityPool.sort(MailItem.arrivalComparator);
+			nonPriorityPool.sort(new NonPriorityComparer());
 		}
 	}
 	
@@ -109,4 +108,45 @@ public class MailPool extends Observable implements IMailPool {
 		
 
 	}
+
+	/**
+	 * Comparator classes and helper method
+	 *
+	 */
+	private class PriorityComparer implements Comparator<MailItem> {
+		// Compare Priority level, if they are the same, try comparing arrival time
+		public int compare(MailItem m1, MailItem m2){
+			if(((PriorityMailItem)m1).getPriorityLevel() > ((PriorityMailItem)m2).getPriorityLevel()){
+				return -1;
+			}
+			else if(((PriorityMailItem)m1).getPriorityLevel() == ((PriorityMailItem)m2).getPriorityLevel()){
+				return compareArrival(m1,m2);
+			}
+			else{
+				return 1;
+			}
+		}
+	}
+	
+	private class NonPriorityComparer implements Comparator<MailItem>{
+		
+		// Compare arrival time
+		public int compare(MailItem m1, MailItem m2){
+			return compareArrival(m1,m2);
+		}
+	}
+	
+	public static int compareArrival(MailItem m1, MailItem m2){
+		if(m1.getArrivalTime() < m2.getArrivalTime()){
+			return -1;
+		}
+		else if(m1.getArrivalTime() == m2.getArrivalTime()){
+			return 0;
+		}
+		else{
+			return 1;
+		}
+	}
+	
+	
 }

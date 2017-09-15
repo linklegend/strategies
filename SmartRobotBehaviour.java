@@ -1,13 +1,15 @@
 package strategies;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+
 import automail.Clock;
 import automail.MailItem;
 import automail.PriorityMailItem;
 import automail.StorageTube;
 import exceptions.TubeFullException;
 
-public class SmartRobotBehaviour implements IRobotBehaviour {
+public class SmartRobotBehaviour implements IRobotBehaviour{
 	
 	private int newPriorityArrival;
 	
@@ -35,7 +37,7 @@ public class SmartRobotBehaviour implements IRobotBehaviour {
 			}
 			else{
 				// Check if there is more than 1 priority arrival and the size of the tube is greater than or equal to half
-				if(newPriorityArrival > 1 && tube.getSize() >= StorageTube.MAXIMUM_CAPACITY/2){
+				if(newPriorityArrival > 1 && tube.getSize() >= tube.MAXIMUM_CAPACITY/2){
 
 					return true;
 				}
@@ -69,7 +71,7 @@ public class SmartRobotBehaviour implements IRobotBehaviour {
 		}
 		
 		// Grab priority mail
-		while(tempTube.size() < StorageTube.MAXIMUM_CAPACITY){
+		while(tempTube.size() < tube.MAXIMUM_CAPACITY){
 			if(containMail(mailPool,MailPool.PRIORITY_POOL)){
 				tempTube.add(mailPool.getHighestPriorityMail());
 			}
@@ -86,7 +88,7 @@ public class SmartRobotBehaviour implements IRobotBehaviour {
 		}
 		
 		// Sort tempTube based on floor
-		tempTube.sort(MailItem.arrivalComparator);
+		tempTube.sort(new ArrivalComparer());
 		
 		// Iterate through the tempTube
 		while(tempTube.iterator().hasNext()){
@@ -116,4 +118,14 @@ public class SmartRobotBehaviour implements IRobotBehaviour {
 			return false;
 		}
 	}
+	
+	private class ArrivalComparer implements Comparator<MailItem>{
+
+		@Override
+		public int compare(MailItem m1, MailItem m2) {
+			return MailPool.compareArrival(m1, m2);
+		}
+		
+	}
+
 }
